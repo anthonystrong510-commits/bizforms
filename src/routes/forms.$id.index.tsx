@@ -50,7 +50,9 @@ type Question = {
   options: unknown;
   required: boolean;
   position: number;
+  section: number;
 };
+
 
 function Builder() {
   const { id } = Route.useParams();
