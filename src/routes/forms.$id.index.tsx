@@ -424,6 +424,7 @@ function QuestionCard({
   index,
   total,
   disabled,
+  sectionCount,
   onPatch,
   onDelete,
   onMove,
@@ -432,6 +433,7 @@ function QuestionCard({
   index: number;
   total: number;
   disabled: boolean;
+  sectionCount: number;
   onPatch: (patch: TablesUpdate<"questions">) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
