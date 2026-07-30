@@ -53,6 +53,27 @@ export function slugify(title: string) {
   return `${base}-${randomCode(5)}`;
 }
 
+export type FormSection = { title: string; description: string };
+
+export function parseSections(raw: unknown): FormSection[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.map((s) => {
+    if (typeof s === "string") return { title: s, description: "" };
+    const o = (s ?? {}) as Record<string, unknown>;
+    return {
+      title: typeof o.title === "string" ? o.title : "",
+      description: typeof o.description === "string" ? o.description : "",
+    };
+  });
+}
+
 export function origin() {
   return typeof window === "undefined" ? "" : window.location.origin;
 }
+
+/** Links always follow whatever domain the app is currently served from. */
+export function formLinks(slug: string, shortCode: string) {
+  const base = origin();
+  return { long: `${base}/form/${slug}`, short: `${base}/f/${shortCode}` };
+}
+

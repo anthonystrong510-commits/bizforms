@@ -19,7 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { QUESTION_TYPES, THEMES, themeClass, type QuestionType } from "@/lib/forms";
+import {
+  QUESTION_TYPES,
+  THEMES,
+  themeClass,
+  parseSections,
+  formLinks,
+  type FormSection,
+  type QuestionType,
+} from "@/lib/forms";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/forms/$id/")({
@@ -42,7 +50,9 @@ type Question = {
   options: unknown;
   required: boolean;
   position: number;
+  section: number;
 };
+
 
 function Builder() {
   const { id } = Route.useParams();
@@ -140,9 +150,15 @@ function Builder() {
     );
   }
 
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
-  const longLink = `${origin}/form/${form.slug}`;
-  const shortLink = `${origin}/f/${form.short_code}`;
+  const declared = parseSections(form.sections);
+  const maxSection = questions.reduce((m, q) => Math.max(m, q.section ?? 0), 0);
+  const sections: FormSection[] = Array.from(
+    { length: Math.max(declared.length, maxSection + 1, 1) },
+    (_, i) => declared[i] ?? { title: "", description: "" },
+  );
+
+  const { long: longLink, short: shortLink } = formLinks(form.slug, form.short_code);
+
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -221,10 +237,122 @@ function Builder() {
                 </Label>
               </div>
             </div>
+
+            <div className="grid gap-4 border-t pt-4 sm:grid-cols-[1fr_200px]">
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">Background image URL</Label>
+                <Input
+                  placeholder="https://…/flyer.jpg"
+                  defaultValue={form.background_image_url ?? ""}
+                  disabled={!isAdmin}
+                  onBlur={(e) =>
+                    e.target.value !== (form.background_image_url ?? "") &&
+                    patchForm.mutate({ background_image_url: e.target.value || null })
+                  }
+                />
+                <p className="text-xs text-muted-foreground">
+                  Shown behind the form and on the start card — it blends automatically with your theme.
+                </p>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-xs text-muted-foreground">
+                  Background blend ({Math.round(Number(form.background_dim ?? 0.55) * 100)}%)
+                </Label>
+                <input
+                  type="range"
+                  min={0}
+                  max={95}
+                  step={5}
+                  className="w-full accent-[var(--primary)]"
+                  disabled={!isAdmin}
+                  defaultValue={Math.round(Number(form.background_dim ?? 0.55) * 100)}
+                  onMouseUp={(e) =>
+                    patchForm.mutate({ background_dim: Number(e.currentTarget.value) / 100 })
+                  }
+                  onTouchEnd={(e) =>
+                    patchForm.mutate({ background_dim: Number(e.currentTarget.value) / 100 })
+                  }
+                />
+                {form.background_image_url ? (
+                  <img
+                    src={form.background_image_url}
+                    alt="Form background preview"
+                    className="h-16 w-full rounded-md object-cover"
+                  />
+                ) : null}
+              </div>
+            </div>
           </div>
         </div>
 
+        <div className="rounded-xl border bg-card p-6 shadow-card">
+          <div className="flex items-center gap-3">
+            <h3 className="font-display font-bold">Sections</h3>
+            <Button
+              size="sm"
+              variant="outline"
+              className="ml-auto"
+              disabled={!isAdmin}
+              onClick={() =>
+                patchForm.mutate({
+                  sections: [...sections, { title: `Section ${sections.length + 1}`, description: "" }] as never,
+                })
+              }
+            >
+              <Plus className="size-3.5" /> Add section
+            </Button>
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Respondents move through one section per page with Next, then Submit at the end.
+          </p>
+          <div className="mt-4 space-y-3">
+            {sections.map((s, i) => (
+              <div key={i} className="flex flex-wrap items-center gap-2">
+                <span className="w-16 text-sm font-semibold text-muted-foreground">{i + 1}.</span>
+                <Input
+                  className="flex-1"
+                  placeholder="Section title"
+                  defaultValue={s.title}
+                  disabled={!isAdmin}
+                  onBlur={(e) => {
+                    const next = sections.map((x, j) =>
+                      j === i ? { ...x, title: e.target.value } : x,
+                    );
+                    patchForm.mutate({ sections: next as never });
+                  }}
+                />
+                <Input
+                  className="flex-1"
+                  placeholder="Section description (optional)"
+                  defaultValue={s.description}
+                  disabled={!isAdmin}
+                  onBlur={(e) => {
+                    const next = sections.map((x, j) =>
+                      j === i ? { ...x, description: e.target.value } : x,
+                    );
+                    patchForm.mutate({ sections: next as never });
+                  }}
+                />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-destructive"
+                  disabled={!isAdmin || sections.length <= 1}
+                  onClick={() => patchForm.mutate({ sections: sections.filter((_, j) => j !== i) as never })}
+                >
+                  <Trash2 className="size-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+
         <div className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Questions are grouped into the section chosen on each card.
+          </p>
+
           {questions.map((q, index) => (
             <QuestionCard
               key={q.id}
@@ -232,6 +360,8 @@ function Builder() {
               index={index}
               total={questions.length}
               disabled={!isAdmin}
+              sectionCount={sections.length}
+
               onPatch={(patch) => patchQuestion.mutate({ qid: q.id, patch })}
               onDelete={() => deleteQuestion.mutate(q.id)}
               onMove={(dir) => move.mutate({ index, dir })}
@@ -296,6 +426,7 @@ function QuestionCard({
   index,
   total,
   disabled,
+  sectionCount,
   onPatch,
   onDelete,
   onMove,
@@ -304,6 +435,7 @@ function QuestionCard({
   index: number;
   total: number;
   disabled: boolean;
+  sectionCount: number;
   onPatch: (patch: TablesUpdate<"questions">) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
@@ -388,6 +520,23 @@ function QuestionCard({
                 ))}
               </SelectContent>
             </Select>
+            <Select
+              value={String(q.section ?? 0)}
+              disabled={disabled}
+              onValueChange={(v) => onPatch({ section: Number(v) })}
+            >
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: sectionCount }, (_, i) => (
+                  <SelectItem key={i} value={String(i)}>
+                    Section {i + 1}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <div className="flex items-center gap-2">
               <Switch
                 id={`req-${q.id}`}
