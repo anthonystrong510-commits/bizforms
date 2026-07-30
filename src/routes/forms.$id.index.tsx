@@ -20,6 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { QUESTION_TYPES, THEMES, themeClass, type QuestionType } from "@/lib/forms";
+import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/forms/$id/")({
   head: () => ({
@@ -78,7 +79,7 @@ function Builder() {
   });
 
   const patchForm = useMutation({
-    mutationFn: async (patch: Record<string, unknown>) => {
+    mutationFn: async (patch: TablesUpdate<"forms">) => {
       const { error } = await supabase.from("forms").update(patch).eq("id", id);
       if (error) throw error;
     },
@@ -87,7 +88,7 @@ function Builder() {
   });
 
   const patchQuestion = useMutation({
-    mutationFn: async ({ qid, patch }: { qid: string; patch: Record<string, unknown> }) => {
+    mutationFn: async ({ qid, patch }: { qid: string; patch: TablesUpdate<"questions"> }) => {
       const { error } = await supabase.from("questions").update(patch).eq("id", qid);
       if (error) throw error;
     },
@@ -303,7 +304,7 @@ function QuestionCard({
   index: number;
   total: number;
   disabled: boolean;
-  onPatch: (patch: Record<string, unknown>) => void;
+  onPatch: (patch: TablesUpdate<"questions">) => void;
   onDelete: () => void;
   onMove: (dir: -1 | 1) => void;
 }) {
