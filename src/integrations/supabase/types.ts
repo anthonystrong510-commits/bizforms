@@ -53,6 +53,8 @@ export type Database = {
       forms: {
         Row: {
           accepting_responses: boolean
+          background_dim: number
+          background_image_url: string | null
           confirmation_message: string
           cover_image_url: string | null
           created_at: string
@@ -60,6 +62,7 @@ export type Database = {
           id: string
           is_published: boolean
           owner_id: string
+          sections: Json
           short_code: string
           slug: string
           theme: string
@@ -68,6 +71,8 @@ export type Database = {
         }
         Insert: {
           accepting_responses?: boolean
+          background_dim?: number
+          background_image_url?: string | null
           confirmation_message?: string
           cover_image_url?: string | null
           created_at?: string
@@ -75,6 +80,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           owner_id: string
+          sections?: Json
           short_code: string
           slug: string
           theme?: string
@@ -83,6 +89,8 @@ export type Database = {
         }
         Update: {
           accepting_responses?: boolean
+          background_dim?: number
+          background_image_url?: string | null
           confirmation_message?: string
           cover_image_url?: string | null
           created_at?: string
@@ -90,6 +98,7 @@ export type Database = {
           id?: string
           is_published?: boolean
           owner_id?: string
+          sections?: Json
           short_code?: string
           slug?: string
           theme?: string
@@ -131,6 +140,7 @@ export type Database = {
           options: Json
           position: number
           required: boolean
+          section: number
           title: string
           type: string
         }
@@ -142,6 +152,7 @@ export type Database = {
           options?: Json
           position?: number
           required?: boolean
+          section?: number
           title?: string
           type?: string
         }
@@ -153,6 +164,7 @@ export type Database = {
           options?: Json
           position?: number
           required?: boolean
+          section?: number
           title?: string
           type?: string
         }
@@ -170,16 +182,19 @@ export type Database = {
         Row: {
           form_id: string
           id: string
+          seq: number | null
           submitted_at: string
         }
         Insert: {
           form_id: string
           id?: string
+          seq?: number | null
           submitted_at?: string
         }
         Update: {
           form_id?: string
           id?: string
+          seq?: number | null
           submitted_at?: string
         }
         Relationships: [
@@ -221,6 +236,10 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      submit_response: {
+        Args: { p_answers: Json; p_form_id: string }
+        Returns: number
       }
     }
     Enums: {
