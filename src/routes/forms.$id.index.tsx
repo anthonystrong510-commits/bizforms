@@ -360,6 +360,8 @@ function Builder() {
               index={index}
               total={questions.length}
               disabled={!isAdmin}
+              sectionCount={sections.length}
+
               onPatch={(patch) => patchQuestion.mutate({ qid: q.id, patch })}
               onDelete={() => deleteQuestion.mutate(q.id)}
               onMove={(dir) => move.mutate({ index, dir })}
