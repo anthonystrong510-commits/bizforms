@@ -10,33 +10,102 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as FCodeRouteImport } from './routes/f.$code'
+import { Route as FormSlugRouteImport } from './routes/form.$slug'
+import { Route as FormsIdIndexRouteImport } from './routes/forms.$id.index'
+import { Route as FormsIdResponsesRouteImport } from './routes/forms.$id.responses'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FCodeRoute = FCodeRouteImport.update({
+  id: '/f/$code',
+  path: '/f/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormSlugRoute = FormSlugRouteImport.update({
+  id: '/form/$slug',
+  path: '/form/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormsIdIndexRoute = FormsIdIndexRouteImport.update({
+  id: '/forms/$id/',
+  path: '/forms/$id/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FormsIdResponsesRoute = FormsIdResponsesRouteImport.update({
+  id: '/forms/$id/responses',
+  path: '/forms/$id/responses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/f/$code': typeof FCodeRoute
+  '/form/$slug': typeof FormSlugRoute
+  '/forms/$id/responses': typeof FormsIdResponsesRoute
+  '/forms/$id/': typeof FormsIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/f/$code': typeof FCodeRoute
+  '/form/$slug': typeof FormSlugRoute
+  '/forms/$id/responses': typeof FormsIdResponsesRoute
+  '/forms/$id': typeof FormsIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/f/$code': typeof FCodeRoute
+  '/form/$slug': typeof FormSlugRoute
+  '/forms/$id/responses': typeof FormsIdResponsesRoute
+  '/forms/$id/': typeof FormsIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/f/$code'
+    | '/form/$slug'
+    | '/forms/$id/responses'
+    | '/forms/$id/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/f/$code'
+    | '/form/$slug'
+    | '/forms/$id/responses'
+    | '/forms/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/f/$code'
+    | '/form/$slug'
+    | '/forms/$id/responses'
+    | '/forms/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
+  FCodeRoute: typeof FCodeRoute
+  FormSlugRoute: typeof FormSlugRoute
+  FormsIdResponsesRoute: typeof FormsIdResponsesRoute
+  FormsIdIndexRoute: typeof FormsIdIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +117,51 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/f/$code': {
+      id: '/f/$code'
+      path: '/f/$code'
+      fullPath: '/f/$code'
+      preLoaderRoute: typeof FCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/form/$slug': {
+      id: '/form/$slug'
+      path: '/form/$slug'
+      fullPath: '/form/$slug'
+      preLoaderRoute: typeof FormSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forms/$id/': {
+      id: '/forms/$id/'
+      path: '/forms/$id'
+      fullPath: '/forms/$id/'
+      preLoaderRoute: typeof FormsIdIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forms/$id/responses': {
+      id: '/forms/$id/responses'
+      path: '/forms/$id/responses'
+      fullPath: '/forms/$id/responses'
+      preLoaderRoute: typeof FormsIdResponsesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
+  FCodeRoute: FCodeRoute,
+  FormSlugRoute: FormSlugRoute,
+  FormsIdResponsesRoute: FormsIdResponsesRoute,
+  FormsIdIndexRoute: FormsIdIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
