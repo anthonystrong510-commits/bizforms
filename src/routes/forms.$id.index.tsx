@@ -19,7 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { QUESTION_TYPES, THEMES, themeClass, type QuestionType } from "@/lib/forms";
+import {
+  QUESTION_TYPES,
+  THEMES,
+  themeClass,
+  parseSections,
+  formLinks,
+  type FormSection,
+  type QuestionType,
+} from "@/lib/forms";
 import type { TablesUpdate } from "@/integrations/supabase/types";
 
 export const Route = createFileRoute("/forms/$id/")({
