@@ -140,9 +140,15 @@ function Builder() {
     );
   }
 
-  const origin = typeof window === "undefined" ? "" : window.location.origin;
-  const longLink = `${origin}/form/${form.slug}`;
-  const shortLink = `${origin}/f/${form.short_code}`;
+  const declared = parseSections(form.sections);
+  const maxSection = questions.reduce((m, q) => Math.max(m, q.section ?? 0), 0);
+  const sections: FormSection[] = Array.from(
+    { length: Math.max(declared.length, maxSection + 1, 1) },
+    (_, i) => declared[i] ?? { title: "", description: "" },
+  );
+
+  const { long: longLink, short: shortLink } = formLinks(form.slug, form.short_code);
+
 
   return (
     <div className="min-h-screen bg-background pb-24">
