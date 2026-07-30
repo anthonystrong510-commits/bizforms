@@ -349,6 +349,10 @@ function Builder() {
 
 
         <div className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Questions are grouped into the section chosen on each card.
+          </p>
+
           {questions.map((q, index) => (
             <QuestionCard
               key={q.id}
