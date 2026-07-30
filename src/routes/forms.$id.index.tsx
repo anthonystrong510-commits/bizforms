@@ -516,6 +516,23 @@ function QuestionCard({
                 ))}
               </SelectContent>
             </Select>
+            <Select
+              value={String(q.section ?? 0)}
+              disabled={disabled}
+              onValueChange={(v) => onPatch({ section: Number(v) })}
+            >
+              <SelectTrigger className="w-44">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: sectionCount }, (_, i) => (
+                  <SelectItem key={i} value={String(i)}>
+                    Section {i + 1}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
             <div className="flex items-center gap-2">
               <Switch
                 id={`req-${q.id}`}
