@@ -14,16 +14,217 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      answers: {
+        Row: {
+          id: string
+          question_id: string
+          response_id: string
+          value: Json
+        }
+        Insert: {
+          id?: string
+          question_id: string
+          response_id: string
+          value?: Json
+        }
+        Update: {
+          id?: string
+          question_id?: string
+          response_id?: string
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "answers_question_id_fkey"
+            columns: ["question_id"]
+            isOneToOne: false
+            referencedRelation: "questions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "answers_response_id_fkey"
+            columns: ["response_id"]
+            isOneToOne: false
+            referencedRelation: "responses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      forms: {
+        Row: {
+          accepting_responses: boolean
+          confirmation_message: string
+          cover_image_url: string | null
+          created_at: string
+          description: string
+          id: string
+          is_published: boolean
+          owner_id: string
+          short_code: string
+          slug: string
+          theme: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          accepting_responses?: boolean
+          confirmation_message?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_published?: boolean
+          owner_id: string
+          short_code: string
+          slug: string
+          theme?: string
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          accepting_responses?: boolean
+          confirmation_message?: string
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_published?: boolean
+          owner_id?: string
+          short_code?: string
+          slug?: string
+          theme?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      questions: {
+        Row: {
+          created_at: string
+          description: string
+          form_id: string
+          id: string
+          options: Json
+          position: number
+          required: boolean
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          form_id: string
+          id?: string
+          options?: Json
+          position?: number
+          required?: boolean
+          title?: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          form_id?: string
+          id?: string
+          options?: Json
+          position?: number
+          required?: boolean
+          title?: string
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "questions_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      responses: {
+        Row: {
+          form_id: string
+          id: string
+          submitted_at: string
+        }
+        Insert: {
+          form_id: string
+          id?: string
+          submitted_at?: string
+        }
+        Update: {
+          form_id?: string
+          id?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "responses_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "forms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +351,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
