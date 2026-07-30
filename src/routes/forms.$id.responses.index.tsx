@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-export const Route = createFileRoute("/forms/$id/responses")({
+export const Route = createFileRoute("/forms/$id/responses/")({
   head: () => ({
     meta: [
       { title: "Responses — Formcraft" },

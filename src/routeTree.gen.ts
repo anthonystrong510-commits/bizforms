@@ -15,6 +15,7 @@ import { Route as FCodeRouteImport } from './routes/f.$code'
 import { Route as FormSlugRouteImport } from './routes/form.$slug'
 import { Route as FormsIdIndexRouteImport } from './routes/forms.$id.index'
 import { Route as FormsIdResponsesRouteImport } from './routes/forms.$id.responses'
+import { Route as FormsIdResponsesSeqRouteImport } from './routes/forms.$id.responses.$seq'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -46,22 +47,29 @@ const FormsIdResponsesRoute = FormsIdResponsesRouteImport.update({
   path: '/forms/$id/responses',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FormsIdResponsesSeqRoute = FormsIdResponsesSeqRouteImport.update({
+  id: '/$seq',
+  path: '/$seq',
+  getParentRoute: () => FormsIdResponsesRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
-  '/forms/$id/responses': typeof FormsIdResponsesRoute
+  '/forms/$id/responses': typeof FormsIdResponsesRouteWithChildren
   '/forms/$id/': typeof FormsIdIndexRoute
+  '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
-  '/forms/$id/responses': typeof FormsIdResponsesRoute
+  '/forms/$id/responses': typeof FormsIdResponsesRouteWithChildren
   '/forms/$id': typeof FormsIdIndexRoute
+  '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -69,8 +77,9 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
-  '/forms/$id/responses': typeof FormsIdResponsesRoute
+  '/forms/$id/responses': typeof FormsIdResponsesRouteWithChildren
   '/forms/$id/': typeof FormsIdIndexRoute
+  '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -81,6 +90,7 @@ export interface FileRouteTypes {
     | '/form/$slug'
     | '/forms/$id/responses'
     | '/forms/$id/'
+    | '/forms/$id/responses/$seq'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -89,6 +99,7 @@ export interface FileRouteTypes {
     | '/form/$slug'
     | '/forms/$id/responses'
     | '/forms/$id'
+    | '/forms/$id/responses/$seq'
   id:
     | '__root__'
     | '/'
@@ -97,6 +108,7 @@ export interface FileRouteTypes {
     | '/form/$slug'
     | '/forms/$id/responses'
     | '/forms/$id/'
+    | '/forms/$id/responses/$seq'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -104,7 +116,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   FCodeRoute: typeof FCodeRoute
   FormSlugRoute: typeof FormSlugRoute
-  FormsIdResponsesRoute: typeof FormsIdResponsesRoute
+  FormsIdResponsesRoute: typeof FormsIdResponsesRouteWithChildren
   FormsIdIndexRoute: typeof FormsIdIndexRoute
 }
 
@@ -152,15 +164,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormsIdResponsesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/forms/$id/responses/$seq': {
+      id: '/forms/$id/responses/$seq'
+      path: '/$seq'
+      fullPath: '/forms/$id/responses/$seq'
+      preLoaderRoute: typeof FormsIdResponsesSeqRouteImport
+      parentRoute: typeof FormsIdResponsesRoute
+    }
   }
 }
+
+interface FormsIdResponsesRouteChildren {
+  FormsIdResponsesSeqRoute: typeof FormsIdResponsesSeqRoute
+}
+
+const FormsIdResponsesRouteChildren: FormsIdResponsesRouteChildren = {
+  FormsIdResponsesSeqRoute: FormsIdResponsesSeqRoute,
+}
+
+const FormsIdResponsesRouteWithChildren =
+  FormsIdResponsesRoute._addFileChildren(FormsIdResponsesRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   FCodeRoute: FCodeRoute,
   FormSlugRoute: FormSlugRoute,
-  FormsIdResponsesRoute: FormsIdResponsesRoute,
+  FormsIdResponsesRoute: FormsIdResponsesRouteWithChildren,
   FormsIdIndexRoute: FormsIdIndexRoute,
 }
 export const routeTree = rootRouteImport
