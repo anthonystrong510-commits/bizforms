@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as FCodeRouteImport } from './routes/f.$code'
 import { Route as FormSlugRouteImport } from './routes/form.$slug'
 import { Route as FormsIdIndexRouteImport } from './routes/forms.$id.index'
@@ -25,6 +26,11 @@ const IndexRoute = IndexRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FCodeRoute = FCodeRouteImport.update({
@@ -58,6 +64,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/forms/$id/': typeof FormsIdIndexRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
   '/forms/$id/responses/': typeof FormsIdResponsesIndexRoute
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
+  '/admin': typeof AdminIndexRoute
   '/forms/$id': typeof FormsIdIndexRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
   '/forms/$id/responses': typeof FormsIdResponsesIndexRoute
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
+  '/admin/': typeof AdminIndexRoute
   '/forms/$id/': typeof FormsIdIndexRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
   '/forms/$id/responses/': typeof FormsIdResponsesIndexRoute
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/f/$code'
     | '/form/$slug'
+    | '/admin/'
     | '/forms/$id/'
     | '/forms/$id/responses/$seq'
     | '/forms/$id/responses/'
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/f/$code'
     | '/form/$slug'
+    | '/admin'
     | '/forms/$id'
     | '/forms/$id/responses/$seq'
     | '/forms/$id/responses'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/f/$code'
     | '/form/$slug'
+    | '/admin/'
     | '/forms/$id/'
     | '/forms/$id/responses/$seq'
     | '/forms/$id/responses/'
@@ -116,6 +128,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   FCodeRoute: typeof FCodeRoute
   FormSlugRoute: typeof FormSlugRoute
+  AdminIndexRoute: typeof AdminIndexRoute
   FormsIdIndexRoute: typeof FormsIdIndexRoute
   FormsIdResponsesSeqRoute: typeof FormsIdResponsesSeqRoute
   FormsIdResponsesIndexRoute: typeof FormsIdResponsesIndexRoute
@@ -135,6 +148,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/f/$code': {
@@ -180,6 +200,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   FCodeRoute: FCodeRoute,
   FormSlugRoute: FormSlugRoute,
+  AdminIndexRoute: AdminIndexRoute,
   FormsIdIndexRoute: FormsIdIndexRoute,
   FormsIdResponsesSeqRoute: FormsIdResponsesSeqRoute,
   FormsIdResponsesIndexRoute: FormsIdResponsesIndexRoute,
@@ -187,3 +208,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
