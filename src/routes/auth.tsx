@@ -19,7 +19,8 @@ export const Route = createFileRoute("/auth")({
       { property: "og:description", content: "Admin access to the Formcraft form builder." },
     ],
   }),
-  validateSearch: (s: Record<string, unknown>) => ({ next: typeof s.next === "string" ? s.next : undefined }),
+  validateSearch: (s: Record<string, unknown>): { next?: string } =>
+    typeof s.next === "string" ? { next: s.next } : {},
   component: AuthPage,
 });
 
