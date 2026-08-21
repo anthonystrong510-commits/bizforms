@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as FCodeRouteImport } from './routes/f.$code'
@@ -17,6 +18,11 @@ import { Route as FormsIdIndexRouteImport } from './routes/forms.$id.index'
 import { Route as FormsIdResponsesIndexRouteImport } from './routes/forms.$id.responses.index'
 import { Route as FormsIdResponsesSeqRouteImport } from './routes/forms.$id.responses.$seq'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
@@ -54,6 +60,7 @@ const FormsIdResponsesSeqRoute = FormsIdResponsesSeqRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
@@ -63,6 +70,7 @@ export interface FileRoutesByFullPath {
   '/forms/$id/responses/': typeof FormsIdResponsesIndexRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
@@ -73,6 +81,7 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
@@ -84,6 +93,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/'
     | '/auth'
     | '/f/$code'
     | '/form/$slug'
@@ -93,6 +103,7 @@ export interface FileRouteTypes {
     | '/forms/$id/responses/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/'
     | '/auth'
     | '/f/$code'
     | '/form/$slug'
@@ -102,6 +113,7 @@ export interface FileRouteTypes {
     | '/forms/$id/responses'
   id:
     | '__root__'
+    | '/'
     | '/auth'
     | '/f/$code'
     | '/form/$slug'
@@ -112,6 +124,7 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   FCodeRoute: typeof FCodeRoute
   FormSlugRoute: typeof FormSlugRoute
@@ -123,6 +136,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -176,6 +196,7 @@ declare module '@tanstack/react-router' {
 }
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   FCodeRoute: FCodeRoute,
   FormSlugRoute: FormSlugRoute,
