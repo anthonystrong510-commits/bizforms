@@ -12,7 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { randomCode, slugify, themeClass } from "@/lib/forms";
 import { TEMPLATES, type FormTemplate } from "@/lib/templates";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/admin/")({
   head: () => ({
     meta: [
       { title: "Formcraft — Build beautiful forms and share short links" },
