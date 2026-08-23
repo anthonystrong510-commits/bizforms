@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApplyRouteImport } from './routes/apply'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
 import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as FCodeRouteImport } from './routes/f.$code'
 import { Route as FormSlugRouteImport } from './routes/form.$slug'
@@ -38,6 +39,11 @@ const AuthRoute = AuthRouteImport.update({
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminAttendeesRoute = AdminAttendeesRouteImport.update({
+  id: '/admin/attendees',
+  path: '/admin/attendees',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSiteRoute = AdminSiteRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
+  '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/site': typeof AdminSiteRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
+  '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/site': typeof AdminSiteRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/apply': typeof ApplyRoute
   '/auth': typeof AuthRoute
+  '/admin/attendees': typeof AdminAttendeesRoute
   '/admin/site': typeof AdminSiteRoute
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
@@ -114,6 +123,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apply'
     | '/auth'
+    | '/admin/attendees'
     | '/admin/site'
     | '/f/$code'
     | '/form/$slug'
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apply'
     | '/auth'
+    | '/admin/attendees'
     | '/admin/site'
     | '/f/$code'
     | '/form/$slug'
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/'
     | '/apply'
     | '/auth'
+    | '/admin/attendees'
     | '/admin/site'
     | '/f/$code'
     | '/form/$slug'
@@ -151,6 +163,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ApplyRoute: typeof ApplyRoute
   AuthRoute: typeof AuthRoute
+  AdminAttendeesRoute: typeof AdminAttendeesRoute
   AdminSiteRoute: typeof AdminSiteRoute
   FCodeRoute: typeof FCodeRoute
   FormSlugRoute: typeof FormSlugRoute
@@ -188,6 +201,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/attendees': {
+      id: '/admin/attendees'
+      path: '/admin/attendees'
+      fullPath: '/admin/attendees'
+      preLoaderRoute: typeof AdminAttendeesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/site': {
@@ -239,6 +259,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ApplyRoute: ApplyRoute,
   AuthRoute: AuthRoute,
+  AdminAttendeesRoute: AdminAttendeesRoute,
   AdminSiteRoute: AdminSiteRoute,
   FCodeRoute: FCodeRoute,
   FormSlugRoute: FormSlugRoute,
