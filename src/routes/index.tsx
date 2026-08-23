@@ -337,6 +337,8 @@ function EventHome() {
         </div>
       </section>
 
+      <AttendeeSignup />
+
       <SiteFooter site={s} />
     </div>
   );
