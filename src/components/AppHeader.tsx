@@ -18,6 +18,9 @@ export function AppHeader({ title }: { title?: string }) {
         </span>
       ) : null}
       <div className="ml-auto flex items-center gap-3">
+        <Link to="/admin/attendees" className="hidden text-sm text-muted-foreground hover:underline sm:inline">
+          Guest list
+        </Link>
         <Link to="/admin/site" className="hidden text-sm text-muted-foreground hover:underline sm:inline">
           Site content
         </Link>
