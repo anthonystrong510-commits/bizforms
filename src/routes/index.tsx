@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSite } from "@/lib/site";
 import { SiteFooter, SiteNav } from "@/components/site/SiteChrome";
+import { AttendeeSignup } from "@/components/site/AttendeeSignup";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -336,6 +337,8 @@ function EventHome() {
           </div>
         </div>
       </section>
+
+      <AttendeeSignup />
 
       <SiteFooter site={s} />
     </div>

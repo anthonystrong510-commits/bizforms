@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, CheckCircle2, Star } from "lucide-react";
+import { ArrowLeft, ArrowRight, CheckCircle2, Copy, Mail, Star } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { themeClass, parseSections, type FormSection } from "@/lib/forms";
+import { useSite } from "@/lib/site";
 
 type Question = {
   id: string;
@@ -36,6 +37,11 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [ticket, setTicket] = useState<number | null>(null);
+  const { data: site } = useSite();
+  const followUpEmail = site?.apply.email || site?.footer.email || "hello@example.com";
+  const followUpPhone = site?.apply.phone || site?.footer.phone || "";
+
+
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["public-form", by, value],
@@ -160,6 +166,41 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
                   <span className="font-display text-lg font-bold text-primary">#{ticket}</span>
                 </p>
               ) : null}
+              <div className="mt-6 rounded-xl border bg-muted/40 p-5 text-left">
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  Step 03 — Approval
+                </p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Approved vendors will be contacted with payment instructions and booth
+                  assignment. For any follow-up, quote your submission number and write to:
+                </p>
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Mail className="size-4 text-primary" />
+                  <a
+                    href={`mailto:${followUpEmail}?subject=${encodeURIComponent(
+                      `Application ${ticket ? `#${ticket}` : ""} — ${form.title}`,
+                    )}`}
+                    className="text-sm font-semibold text-primary underline underline-offset-4"
+                  >
+                    {followUpEmail}
+                  </a>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    className="ml-auto"
+                    onClick={() => {
+                      navigator.clipboard?.writeText(followUpEmail);
+                      toast.success("Email copied");
+                    }}
+                  >
+                    <Copy className="size-3.5" /> Copy
+                  </Button>
+                </div>
+                {followUpPhone ? (
+                  <p className="mt-3 text-xs text-muted-foreground">Or call {followUpPhone}</p>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
@@ -168,22 +209,31 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
   }
 
   if (phase === "start") {
+    const totalQuestions = questions.length;
+    const minutes = Math.max(1, Math.round(totalQuestions * 0.4));
     return (
       <Shell>
         <div className="flex min-h-screen items-center justify-center px-4 py-12">
-          <div className="w-full max-w-md overflow-hidden rounded-xl bg-card shadow-lift">
+          <div className="w-full max-w-sm overflow-hidden rounded-xl bg-card shadow-lift">
             {bg ? (
-              <img src={bg} alt={`${form.title} cover`} className="h-56 w-full object-cover" />
+              <img src={bg} alt={`${form.title} cover`} className="h-28 w-full object-cover" />
             ) : (
-              <div className={`${themeClass(form.theme)} h-40`} />
+              <div className={`${themeClass(form.theme)} h-20`} />
             )}
-            <div className="flex flex-col items-center gap-6 px-8 py-12 text-center">
-              <h1 className="font-display text-3xl font-extrabold text-primary">{form.title}</h1>
+            <div className="flex flex-col items-center gap-4 px-7 py-8 text-center">
+              <h1 className="font-display text-2xl font-extrabold text-primary">{form.title}</h1>
               {form.description ? (
-                <p className="whitespace-pre-line text-sm text-muted-foreground">{form.description}</p>
+                <p className="line-clamp-2 text-sm text-muted-foreground">{form.description}</p>
               ) : null}
+              <div className="flex flex-wrap justify-center gap-2 text-xs text-muted-foreground">
+                <span className="rounded-full border px-3 py-1">
+                  {sections.length} section{sections.length === 1 ? "" : "s"}
+                </span>
+                <span className="rounded-full border px-3 py-1">{totalQuestions} questions</span>
+                <span className="rounded-full border px-3 py-1">~{minutes} min</span>
+              </div>
               {form.accepting_responses ? (
-                <Button size="lg" className="mt-2 px-10" onClick={() => setPhase("filling")}>
+                <Button size="lg" className="mt-1 w-full" onClick={() => setPhase("filling")}>
                   Start now
                 </Button>
               ) : (
@@ -197,6 +247,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
       </Shell>
     );
   }
+
 
   const current = grouped[step] ?? [];
   const last = step === sections.length - 1;
