@@ -37,6 +37,11 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
   const [step, setStep] = useState(0);
   const [busy, setBusy] = useState(false);
   const [ticket, setTicket] = useState<number | null>(null);
+  const { data: site } = useSite();
+  const followUpEmail = site?.apply.email || site?.footer.email || "hello@example.com";
+  const followUpPhone = site?.apply.phone || site?.footer.phone || "";
+
+
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["public-form", by, value],
