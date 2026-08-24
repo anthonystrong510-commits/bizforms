@@ -212,7 +212,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
   }
 
   if (phase === "start") {
-    const totalQuestions = questions.length;
+    const totalQuestions = questions.filter((q) => !isContentBlock(q.type)).length;
     const minutes = Math.max(1, Math.round(totalQuestions * 0.4));
     return (
       <Shell>
