@@ -308,10 +308,23 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
         {current.map((q, i) => {
           const options = Array.isArray(q.options) ? (q.options as string[]) : [];
           const val = answers[q.id];
+          const number = current.slice(0, i).filter((x) => !isContentBlock(x.type)).length + 1;
+
+          if (isContentBlock(q.type)) {
+            return (
+              <div
+                key={q.id}
+                className="rounded-xl border-l-4 border-l-primary bg-card p-6 shadow-card"
+              >
+                <RichText html={q.description ?? ""} />
+              </div>
+            );
+          }
+
           return (
             <div key={q.id} className="rounded-xl border bg-card p-6 shadow-card">
               <Label className="text-base font-semibold">
-                {i + 1}. {q.title || "Untitled question"}
+                {number}. {q.title || "Untitled question"}
                 {q.required ? <span className="ml-1 text-destructive">*</span> : null}
               </Label>
               {q.description ? (
