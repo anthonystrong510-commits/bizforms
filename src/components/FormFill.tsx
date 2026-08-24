@@ -112,6 +112,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
     setBusy(true);
     const payload = questions
       .filter((q) => {
+        if (isContentBlock(q.type)) return false;
         const a = answers[q.id];
         return a !== undefined && a !== "" && !(Array.isArray(a) && a.length === 0);
       })
