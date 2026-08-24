@@ -24,6 +24,7 @@ export const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
   { value: "date", label: "Date" },
   { value: "email", label: "Email" },
   { value: "number", label: "Number" },
+  { value: "rich_text", label: "Text block" },
 ];
 
 export const THEMES = [
