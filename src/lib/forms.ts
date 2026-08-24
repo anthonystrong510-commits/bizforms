@@ -7,7 +7,12 @@ export type QuestionType =
   | "rating"
   | "date"
   | "email"
-  | "number";
+  | "number"
+  | "rich_text";
+
+/** Types that display content instead of collecting an answer. */
+export const CONTENT_TYPES = ["rich_text"];
+export const isContentBlock = (type: string) => CONTENT_TYPES.includes(type);
 
 export const QUESTION_TYPES: { value: QuestionType; label: string }[] = [
   { value: "short_text", label: "Short answer" },
