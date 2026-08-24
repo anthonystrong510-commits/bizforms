@@ -443,6 +443,7 @@ function QuestionCard({
   const initialOptions = Array.isArray(q.options) ? (q.options as string[]) : [];
   const [options, setOptions] = useState<string[]>(initialOptions);
   const hasOptions = ["choice", "checkbox", "dropdown"].includes(q.type);
+  const isContent = isContentBlock(q.type);
 
   useEffect(() => {
     setOptions(Array.isArray(q.options) ? (q.options as string[]) : []);
