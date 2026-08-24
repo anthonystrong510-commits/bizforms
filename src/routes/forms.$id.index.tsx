@@ -19,8 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import {
   QUESTION_TYPES,
+  isContentBlock,
   THEMES,
   themeClass,
   parseSections,
