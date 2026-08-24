@@ -97,6 +97,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
 
   function validate(list: Question[]) {
     for (const q of list) {
+      if (isContentBlock(q.type)) continue;
       const a = answers[q.id];
       if (q.required && (a === undefined || a === "" || (Array.isArray(a) && a.length === 0))) {
         toast.error(`"${q.title || "Untitled question"}" is required`);
