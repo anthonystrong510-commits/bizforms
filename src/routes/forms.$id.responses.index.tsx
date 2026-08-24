@@ -49,7 +49,7 @@ function Responses() {
       const [{ data: form }, { data: questions }, { data: responses }, { data: answers }] =
         await Promise.all([
           supabase.from("forms").select("title").eq("id", id).single(),
-          supabase.from("questions").select("id,title,position").eq("form_id", id).order("position"),
+          supabase.from("questions").select("id,title,position,type").eq("form_id", id).order("position"),
           supabase
             .from("responses")
             .select("id,seq,submitted_at")

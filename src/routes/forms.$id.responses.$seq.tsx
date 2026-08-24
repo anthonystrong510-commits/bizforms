@@ -38,7 +38,7 @@ function SingleResponse() {
     queryFn: async () => {
       const [{ data: form }, { data: questions }, { data: response }, { count }] = await Promise.all([
         supabase.from("forms").select("title").eq("id", id).single(),
-        supabase.from("questions").select("id,title,position,section").eq("form_id", id).order("position"),
+        supabase.from("questions").select("id,title,position,section,type").eq("form_id", id).order("position"),
         supabase
           .from("responses")
           .select("id,seq,submitted_at")
