@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { themeClass, parseSections, type FormSection } from "@/lib/forms";
+import { themeClass, parseSections, isContentBlock, type FormSection } from "@/lib/forms";
+import { RichText } from "@/components/RichText";
 import { useSite } from "@/lib/site";
 
 type Question = {
