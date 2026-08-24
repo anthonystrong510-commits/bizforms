@@ -257,19 +257,34 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
 
   return (
     <Shell>
-      <div className="mx-auto max-w-2xl space-y-4 px-4 py-8">
-        <div className="overflow-hidden rounded-xl border bg-card shadow-card">
-          <div className={`${themeClass(form.theme)} h-3`} />
-          <div className="p-5">
-            <h1 className="font-display text-xl font-bold text-primary">{form.title}</h1>
-            <div className="mt-3 flex items-center gap-3">
-              <Progress value={((step + 1) / sections.length) * 100} className="h-1.5" />
-              <span className="shrink-0 text-xs text-muted-foreground">
-                Section {step + 1} of {sections.length}
-              </span>
-            </div>
+      <div className="mx-auto max-w-2xl space-y-4 px-3 py-6 sm:px-4 sm:py-8">
+        <header className="sticky top-2 z-20 overflow-hidden rounded-2xl border bg-card/90 shadow-lift backdrop-blur-md">
+          <div className="relative">
+            {bg ? (
+              <img src={bg} alt="" aria-hidden className="h-16 w-full object-cover sm:h-24" />
+            ) : (
+              <div className={`${themeClass(form.theme)} h-8 w-full sm:h-12`} />
+            )}
+            <div className={`${themeClass(form.theme)} absolute inset-x-0 bottom-0 h-1.5 opacity-90`} />
           </div>
-        </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6 sm:py-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate font-display text-lg font-extrabold tracking-tight text-primary sm:text-2xl">
+                {form.title}
+              </h1>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {sections[step]?.title || `Section ${step + 1}`}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border px-3 py-1 font-mono text-[0.7rem] tracking-wide text-muted-foreground">
+              {step + 1} / {sections.length}
+            </span>
+            <Progress
+              value={((step + 1) / sections.length) * 100}
+              className="h-1.5 w-full basis-full"
+            />
+          </div>
+        </header>
 
         {sections[step]?.title || sections[step]?.description ? (
           <div className="rounded-xl border bg-card p-5 shadow-card">
