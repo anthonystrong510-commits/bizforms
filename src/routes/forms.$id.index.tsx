@@ -19,8 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { RichTextEditor } from "@/components/RichTextEditor";
 import {
   QUESTION_TYPES,
+  isContentBlock,
   THEMES,
   themeClass,
   parseSections,
@@ -443,6 +445,7 @@ function QuestionCard({
   const initialOptions = Array.isArray(q.options) ? (q.options as string[]) : [];
   const [options, setOptions] = useState<string[]>(initialOptions);
   const hasOptions = ["choice", "checkbox", "dropdown"].includes(q.type);
+  const isContent = isContentBlock(q.type);
 
   useEffect(() => {
     setOptions(Array.isArray(q.options) ? (q.options as string[]) : []);
@@ -458,19 +461,41 @@ function QuestionCard({
       <div className="flex items-start gap-3">
         <span className="mt-2 text-sm font-semibold text-muted-foreground">{index + 1}.</span>
         <div className="flex-1 space-y-3">
-          <Input
-            placeholder="Question title"
-            defaultValue={q.title}
-            disabled={disabled}
-            onBlur={(e) => e.target.value !== q.title && onPatch({ title: e.target.value })}
-          />
-          <Input
-            placeholder="Helper text (optional)"
-            className="text-sm"
-            defaultValue={q.description}
-            disabled={disabled}
-            onBlur={(e) => e.target.value !== q.description && onPatch({ description: e.target.value })}
-          />
+          {isContent ? (
+            <>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary">Text block — no answer collected</Badge>
+              </div>
+              <Input
+                placeholder="Internal label (optional, admin only)"
+                className="text-sm"
+                defaultValue={q.title}
+                disabled={disabled}
+                onBlur={(e) => e.target.value !== q.title && onPatch({ title: e.target.value })}
+              />
+              <RichTextEditor
+                value={q.description ?? ""}
+                disabled={disabled}
+                onChange={(html) => onPatch({ description: html })}
+              />
+            </>
+          ) : (
+            <>
+              <Input
+                placeholder="Question title"
+                defaultValue={q.title}
+                disabled={disabled}
+                onBlur={(e) => e.target.value !== q.title && onPatch({ title: e.target.value })}
+              />
+              <Input
+                placeholder="Helper text (optional)"
+                className="text-sm"
+                defaultValue={q.description}
+                disabled={disabled}
+                onBlur={(e) => e.target.value !== q.description && onPatch({ description: e.target.value })}
+              />
+            </>
+          )}
 
           {hasOptions ? (
             <div className="space-y-2">
@@ -537,17 +562,19 @@ function QuestionCard({
               </SelectContent>
             </Select>
 
-            <div className="flex items-center gap-2">
-              <Switch
-                id={`req-${q.id}`}
-                checked={q.required}
-                disabled={disabled}
-                onCheckedChange={(v) => onPatch({ required: v })}
-              />
-              <Label htmlFor={`req-${q.id}`} className="text-sm">
-                Required
-              </Label>
-            </div>
+            {isContent ? null : (
+              <div className="flex items-center gap-2">
+                <Switch
+                  id={`req-${q.id}`}
+                  checked={q.required}
+                  disabled={disabled}
+                  onCheckedChange={(v) => onPatch({ required: v })}
+                />
+                <Label htmlFor={`req-${q.id}`} className="text-sm">
+                  Required
+                </Label>
+              </div>
+            )}
             <div className="ml-auto flex items-center gap-1">
               <Button variant="ghost" size="icon" disabled={disabled || index === 0} onClick={() => onMove(-1)}>
                 <ArrowUp className="size-4" />

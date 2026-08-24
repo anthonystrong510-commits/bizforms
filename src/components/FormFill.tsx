@@ -17,7 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { themeClass, parseSections, type FormSection } from "@/lib/forms";
+import { themeClass, parseSections, isContentBlock, type FormSection } from "@/lib/forms";
+import { RichText } from "@/components/RichText";
 import { useSite } from "@/lib/site";
 
 type Question = {
@@ -96,6 +97,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
 
   function validate(list: Question[]) {
     for (const q of list) {
+      if (isContentBlock(q.type)) continue;
       const a = answers[q.id];
       if (q.required && (a === undefined || a === "" || (Array.isArray(a) && a.length === 0))) {
         toast.error(`"${q.title || "Untitled question"}" is required`);
@@ -110,6 +112,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
     setBusy(true);
     const payload = questions
       .filter((q) => {
+        if (isContentBlock(q.type)) return false;
         const a = answers[q.id];
         return a !== undefined && a !== "" && !(Array.isArray(a) && a.length === 0);
       })
@@ -209,7 +212,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
   }
 
   if (phase === "start") {
-    const totalQuestions = questions.length;
+    const totalQuestions = questions.filter((q) => !isContentBlock(q.type)).length;
     const minutes = Math.max(1, Math.round(totalQuestions * 0.4));
     return (
       <Shell>
@@ -254,19 +257,34 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
 
   return (
     <Shell>
-      <div className="mx-auto max-w-2xl space-y-4 px-4 py-8">
-        <div className="overflow-hidden rounded-xl border bg-card shadow-card">
-          <div className={`${themeClass(form.theme)} h-3`} />
-          <div className="p-5">
-            <h1 className="font-display text-xl font-bold text-primary">{form.title}</h1>
-            <div className="mt-3 flex items-center gap-3">
-              <Progress value={((step + 1) / sections.length) * 100} className="h-1.5" />
-              <span className="shrink-0 text-xs text-muted-foreground">
-                Section {step + 1} of {sections.length}
-              </span>
-            </div>
+      <div className="mx-auto max-w-2xl space-y-4 px-3 py-6 sm:px-4 sm:py-8">
+        <header className="sticky top-2 z-20 overflow-hidden rounded-2xl border bg-card/90 shadow-lift backdrop-blur-md">
+          <div className="relative">
+            {bg ? (
+              <img src={bg} alt="" aria-hidden className="h-16 w-full object-cover sm:h-24" />
+            ) : (
+              <div className={`${themeClass(form.theme)} h-8 w-full sm:h-12`} />
+            )}
+            <div className={`${themeClass(form.theme)} absolute inset-x-0 bottom-0 h-1.5 opacity-90`} />
           </div>
-        </div>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6 sm:py-4">
+            <div className="min-w-0 flex-1">
+              <h1 className="truncate font-display text-lg font-extrabold tracking-tight text-primary sm:text-2xl">
+                {form.title}
+              </h1>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {sections[step]?.title || `Section ${step + 1}`}
+              </p>
+            </div>
+            <span className="shrink-0 rounded-full border px-3 py-1 font-mono text-[0.7rem] tracking-wide text-muted-foreground">
+              {step + 1} / {sections.length}
+            </span>
+            <Progress
+              value={((step + 1) / sections.length) * 100}
+              className="h-1.5 w-full basis-full"
+            />
+          </div>
+        </header>
 
         {sections[step]?.title || sections[step]?.description ? (
           <div className="rounded-xl border bg-card p-5 shadow-card">
@@ -290,10 +308,23 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
         {current.map((q, i) => {
           const options = Array.isArray(q.options) ? (q.options as string[]) : [];
           const val = answers[q.id];
+          const number = current.slice(0, i).filter((x) => !isContentBlock(x.type)).length + 1;
+
+          if (isContentBlock(q.type)) {
+            return (
+              <div
+                key={q.id}
+                className="rounded-xl border-l-4 border-l-primary bg-card p-6 shadow-card"
+              >
+                <RichText html={q.description ?? ""} />
+              </div>
+            );
+          }
+
           return (
             <div key={q.id} className="rounded-xl border bg-card p-6 shadow-card">
               <Label className="text-base font-semibold">
-                {i + 1}. {q.title || "Untitled question"}
+                {number}. {q.title || "Untitled question"}
                 {q.required ? <span className="ml-1 text-destructive">*</span> : null}
               </Label>
               {q.description ? (
