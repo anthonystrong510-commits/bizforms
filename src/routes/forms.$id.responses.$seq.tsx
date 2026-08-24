@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { isContentBlock } from "@/lib/forms";
 import { useAuth } from "@/hooks/useAuth";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
@@ -55,7 +56,7 @@ function SingleResponse() {
           .eq("response_id", response.id);
         answers = rows ?? [];
       }
-      return { form, questions: questions ?? [], response, answers, total: count ?? 0 };
+      return { form, questions: (questions ?? []).filter((q) => !isContentBlock(q.type)), response, answers, total: count ?? 0 };
     },
   });
 

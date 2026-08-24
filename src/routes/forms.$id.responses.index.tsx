@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Download, Search, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { isContentBlock } from "@/lib/forms";
 import { useAuth } from "@/hooks/useAuth";
 import { AppHeader } from "@/components/AppHeader";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ export const Route = createFileRoute("/forms/$id/responses/")({
   component: Responses,
 });
 
-type Question = { id: string; title: string; position: number };
+type Question = { id: string; title: string; position: number; type: string };
 
 function Responses() {
   const { id } = Route.useParams();
@@ -59,7 +60,7 @@ function Responses() {
         ]);
       return {
         form,
-        questions: (questions ?? []) as Question[],
+        questions: ((questions ?? []) as Question[]).filter((q) => !isContentBlock(q.type)),
         responses: responses ?? [],
         answers: answers ?? [],
       };
