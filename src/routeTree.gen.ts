@@ -18,6 +18,7 @@ import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as FCodeRouteImport } from './routes/f.$code'
 import { Route as FormSlugRouteImport } from './routes/form.$slug'
 import { Route as FormsIdIndexRouteImport } from './routes/forms.$id.index'
+import { Route as ApiPublicHooksKeepAliveRouteImport } from './routes/api/public/hooks/keep-alive'
 import { Route as FormsIdResponsesIndexRouteImport } from './routes/forms.$id.responses.index'
 import { Route as FormsIdResponsesSeqRouteImport } from './routes/forms.$id.responses.$seq'
 
@@ -66,6 +67,11 @@ const FormsIdIndexRoute = FormsIdIndexRouteImport.update({
   path: '/forms/$id/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksKeepAliveRoute = ApiPublicHooksKeepAliveRouteImport.update({
+  id: '/api/public/hooks/keep-alive',
+  path: '/api/public/hooks/keep-alive',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormsIdResponsesIndexRoute = FormsIdResponsesIndexRouteImport.update({
   id: '/forms/$id/responses/',
   path: '/forms/$id/responses/',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/form/$slug': typeof FormSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/forms/$id/': typeof FormsIdIndexRoute
+  '/api/public/hooks/keep-alive': typeof ApiPublicHooksKeepAliveRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
   '/forms/$id/responses/': typeof FormsIdResponsesIndexRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/form/$slug': typeof FormSlugRoute
   '/admin': typeof AdminIndexRoute
   '/forms/$id': typeof FormsIdIndexRoute
+  '/api/public/hooks/keep-alive': typeof ApiPublicHooksKeepAliveRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
   '/forms/$id/responses': typeof FormsIdResponsesIndexRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/form/$slug': typeof FormSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/forms/$id/': typeof FormsIdIndexRoute
+  '/api/public/hooks/keep-alive': typeof ApiPublicHooksKeepAliveRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
   '/forms/$id/responses/': typeof FormsIdResponsesIndexRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/form/$slug'
     | '/admin/'
     | '/forms/$id/'
+    | '/api/public/hooks/keep-alive'
     | '/forms/$id/responses/$seq'
     | '/forms/$id/responses/'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/form/$slug'
     | '/admin'
     | '/forms/$id'
+    | '/api/public/hooks/keep-alive'
     | '/forms/$id/responses/$seq'
     | '/forms/$id/responses'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/form/$slug'
     | '/admin/'
     | '/forms/$id/'
+    | '/api/public/hooks/keep-alive'
     | '/forms/$id/responses/$seq'
     | '/forms/$id/responses/'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   FormSlugRoute: typeof FormSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
   FormsIdIndexRoute: typeof FormsIdIndexRoute
+  ApiPublicHooksKeepAliveRoute: typeof ApiPublicHooksKeepAliveRoute
   FormsIdResponsesSeqRoute: typeof FormsIdResponsesSeqRoute
   FormsIdResponsesIndexRoute: typeof FormsIdResponsesIndexRoute
 }
@@ -238,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormsIdIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/keep-alive': {
+      id: '/api/public/hooks/keep-alive'
+      path: '/api/public/hooks/keep-alive'
+      fullPath: '/api/public/hooks/keep-alive'
+      preLoaderRoute: typeof ApiPublicHooksKeepAliveRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forms/$id/responses/': {
       id: '/forms/$id/responses/'
       path: '/forms/$id/responses'
@@ -265,6 +285,7 @@ const rootRouteChildren: RootRouteChildren = {
   FormSlugRoute: FormSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
   FormsIdIndexRoute: FormsIdIndexRoute,
+  ApiPublicHooksKeepAliveRoute: ApiPublicHooksKeepAliveRoute,
   FormsIdResponsesSeqRoute: FormsIdResponsesSeqRoute,
   FormsIdResponsesIndexRoute: FormsIdResponsesIndexRoute,
 }
