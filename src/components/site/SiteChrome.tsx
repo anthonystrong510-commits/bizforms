@@ -76,11 +76,6 @@ export function SiteFooter({ site }: { site: SiteContent }) {
                 </a>
               </li>
             ))}
-            <li>
-              <Link to="/admin" className="text-foam/50 hover:text-gold">
-                Organiser login
-              </Link>
-            </li>
           </ul>
         </div>
       </div>
