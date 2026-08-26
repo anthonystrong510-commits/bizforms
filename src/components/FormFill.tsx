@@ -20,6 +20,7 @@ import {
 import { themeClass, parseSections, isContentBlock, type FormSection } from "@/lib/forms";
 import { RichText } from "@/components/RichText";
 import { useSite } from "@/lib/site";
+import { normalizeImageUrl } from "@/lib/site-assets";
 
 type Question = {
   id: string;
@@ -90,7 +91,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
   }
 
   const { form } = data;
-  const bg = form.background_image_url;
+  const bg = normalizeImageUrl(form.background_image_url);
   const dim = Number(form.background_dim ?? 0.55);
 
   const set = (id: string, v: string | string[]) => setAnswers((prev) => ({ ...prev, [id]: v }));
@@ -137,7 +138,7 @@ export function FormFill({ by, value }: { by: "slug" | "short_code"; value: stri
         <>
           <div
             className="fixed inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bg})` }}
+            style={{ backgroundImage: `url(${JSON.stringify(bg)})` }}
             aria-hidden
           />
           <div

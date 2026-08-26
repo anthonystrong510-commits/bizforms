@@ -301,9 +301,9 @@ function Builder() {
                     patchForm.mutate({ background_dim: Number(e.currentTarget.value) / 100 })
                   }
                 />
-                {form.background_image_url ? (
+                {normalizeImageUrl(form.background_image_url) ? (
                   <img
-                    src={form.background_image_url}
+                    src={normalizeImageUrl(form.background_image_url)}
                     alt="Form background preview"
                     className="h-16 w-full rounded-md object-cover"
                   />
