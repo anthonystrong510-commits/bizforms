@@ -48,9 +48,14 @@ function SiteEditor() {
 
   const save = useMutation({
     mutationFn: async (next: SiteContent) => {
+      const clean = {
+        ...next,
+        favicon_url: normalizeImageUrl(next.favicon_url),
+        hero: { ...next.hero, image_url: normalizeImageUrl(next.hero.image_url) },
+      };
       const { error } = await supabase
         .from("site_content")
-        .update({ data: next as never })
+        .update({ data: clean as never })
         .eq("id", "main");
       if (error) throw error;
     },
@@ -129,7 +134,7 @@ function SiteEditor() {
             label="Hero image"
             value={d.hero.image_url}
             busy={uploading === "hero"}
-            onChange={(v) => patch({ hero: { ...d.hero, image_url: normalizeImageUrl(v) } })}
+            onChange={(v) => patch({ hero: { ...d.hero, image_url: v })}
             onUpload={(file) => upload(file, "hero")}
           />
           <ImageField
@@ -137,7 +142,7 @@ function SiteEditor() {
             value={d.favicon_url}
             busy={uploading === "favicon"}
             square
-            onChange={(v) => patch({ favicon_url: normalizeImageUrl(v) })}
+            onChange={(v) => patch({ favicon_url: v })}
             onUpload={(file) => upload(file, "favicon")}
           />
           <div className="grid gap-4 sm:grid-cols-2">
