@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { Plus, Save, Trash2 } from "lucide-react";
+import { ImageUp, Plus, Save, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AppHeader } from "@/components/AppHeader";
@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { fetchSite, type SiteContent } from "@/lib/site";
+import { normalizeImageUrl, uploadSiteImage } from "@/lib/site-assets";
 
 export const Route = createFileRoute("/admin/site")({
   head: () => ({
@@ -33,6 +34,7 @@ function SiteEditor() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const [draft, setDraft] = useState<SiteContent | null>(null);
+  const [uploading, setUploading] = useState<"hero" | "favicon" | null>(null);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -70,6 +72,20 @@ function SiteEditor() {
 
   const d = draft;
   const patch = (part: Partial<SiteContent>) => setDraft({ ...d, ...part });
+
+  async function upload(file: File, kind: "hero" | "favicon") {
+    setUploading(kind);
+    try {
+      const url = await uploadSiteImage(file, kind === "hero" ? "hero" : "branding");
+      if (kind === "hero") patch({ hero: { ...d.hero, image_url: url } });
+      else patch({ favicon_url: url });
+      toast.success(`${kind === "hero" ? "Hero image" : "Favicon"} uploaded. Save changes to publish it.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploading(null);
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -109,10 +125,20 @@ function SiteEditor() {
             value={d.hero.lede}
             onChange={(v) => patch({ hero: { ...d.hero, lede: v } })}
           />
-          <Field
-            label="Hero image URL"
+          <ImageField
+            label="Hero image"
             value={d.hero.image_url}
-            onChange={(v) => patch({ hero: { ...d.hero, image_url: v } })}
+            busy={uploading === "hero"}
+            onChange={(v) => patch({ hero: { ...d.hero, image_url: normalizeImageUrl(v) } })}
+            onUpload={(file) => upload(file, "hero")}
+          />
+          <ImageField
+            label="Browser favicon"
+            value={d.favicon_url}
+            busy={uploading === "favicon"}
+            square
+            onChange={(v) => patch({ favicon_url: normalizeImageUrl(v) })}
+            onUpload={(file) => upload(file, "favicon")}
           />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
@@ -456,6 +482,65 @@ function Field({
       ) : (
         <Input value={value} onChange={(e) => onChange(e.target.value)} />
       )}
+    </div>
+  );
+}
+
+function ImageField({
+  label,
+  value,
+  busy,
+  square,
+  onChange,
+  onUpload,
+}: {
+  label: string;
+  value: string;
+  busy: boolean;
+  square?: boolean;
+  onChange: (value: string) => void;
+  onUpload: (file: File) => void;
+}) {
+  const inputId = `image-${label.toLowerCase().replace(/\s+/g, "-")}`;
+  return (
+    <div className="space-y-2">
+      <Label className="text-xs text-muted-foreground">{label}</Label>
+      <div className="flex flex-wrap items-center gap-3">
+        {value ? (
+          <img
+            src={value}
+            alt={`${label} preview`}
+            className={square ? "size-16 rounded-md border object-contain" : "h-20 w-32 rounded-md border object-cover"}
+          />
+        ) : null}
+        <div className="min-w-0 flex-1 space-y-2">
+          <Input
+            value={value}
+            placeholder="Upload an image or paste a complete https:// URL"
+            onChange={(event) => onChange(event.target.value)}
+          />
+          <input
+            id={inputId}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml,image/x-icon"
+            className="sr-only"
+            disabled={busy}
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onUpload(file);
+              event.target.value = "";
+            }}
+          />
+          <Button asChild type="button" variant="outline" size="sm" disabled={busy}>
+            <label htmlFor={inputId} className="cursor-pointer">
+              <ImageUp className="size-4" /> {busy ? "Uploading…" : "Upload image"}
+            </label>
+          </Button>
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Stored securely and served through this website, so it works on Lovable and Vercel domains.
+      </p>
     </div>
   );
 }
