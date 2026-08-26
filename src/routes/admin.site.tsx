@@ -134,7 +134,7 @@ function SiteEditor() {
             label="Hero image"
             value={d.hero.image_url}
             busy={uploading === "hero"}
-            onChange={(v) => patch({ hero: { ...d.hero, image_url: v })}
+            onChange={(v) => patch({ hero: { ...d.hero, image_url: v } })}
             onUpload={(file) => upload(file, "hero")}
           />
           <ImageField
