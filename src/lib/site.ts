@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeImageUrl } from "@/lib/site-assets";
 
 export type Fact = { label: string; value: string };
 export type Tier = {
@@ -15,6 +16,7 @@ export type Social = { label: string; url: string };
 
 export type SiteContent = {
   brand: string;
+  favicon_url: string;
   hero: {
     eyebrow: string;
     title: string;
@@ -71,6 +73,7 @@ export type SiteContent = {
 
 export const EMPTY_SITE: SiteContent = {
   brand: "Event",
+  favicon_url: "",
   hero: {
     eyebrow: "",
     title: "Event",
@@ -104,7 +107,11 @@ export function normalizeSite(raw: unknown): SiteContent {
 
   return {
     brand: typeof d.brand === "string" ? d.brand : EMPTY_SITE.brand,
-    hero: merge(EMPTY_SITE.hero, d.hero),
+    favicon_url: normalizeImageUrl(d.favicon_url),
+    hero: {
+      ...merge(EMPTY_SITE.hero, d.hero),
+      image_url: normalizeImageUrl((d.hero as { image_url?: unknown })?.image_url),
+    },
     badge: merge(EMPTY_SITE.badge, d.badge),
     facts: arr<Fact>(d.facts, []),
     overview: merge(EMPTY_SITE.overview, d.overview),

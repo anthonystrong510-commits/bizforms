@@ -31,6 +31,7 @@ import {
   type QuestionType,
 } from "@/lib/forms";
 import type { TablesUpdate } from "@/integrations/supabase/types";
+import { normalizeImageUrl, uploadSiteImage } from "@/lib/site-assets";
 
 export const Route = createFileRoute("/forms/$id/")({
   head: () => ({
@@ -61,6 +62,7 @@ function Builder() {
   const { user, isAdmin, loading } = useAuth();
   const navigate = useNavigate();
   const qc = useQueryClient();
+  const [uploadingBackground, setUploadingBackground] = useState(false);
 
   useEffect(() => {
     if (!loading && !user) navigate({ to: "/auth" });
@@ -161,6 +163,19 @@ function Builder() {
 
   const { long: longLink, short: shortLink } = formLinks(form.slug, form.short_code);
 
+  async function uploadBackground(file: File) {
+    setUploadingBackground(true);
+    try {
+      const url = await uploadSiteImage(file, "forms");
+      await patchForm.mutateAsync({ background_image_url: url });
+      toast.success("Form background uploaded");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Upload failed");
+    } finally {
+      setUploadingBackground(false);
+    }
+  }
+
 
   return (
     <div className="min-h-screen bg-background pb-24">
@@ -249,8 +264,19 @@ function Builder() {
                   disabled={!isAdmin}
                   onBlur={(e) =>
                     e.target.value !== (form.background_image_url ?? "") &&
-                    patchForm.mutate({ background_image_url: e.target.value || null })
+                    patchForm.mutate({ background_image_url: normalizeImageUrl(e.target.value) || null })
                   }
+                />
+                <input
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp,image/gif"
+                  disabled={!isAdmin || uploadingBackground}
+                  className="block w-full text-xs text-muted-foreground file:mr-3 file:rounded-md file:border file:bg-background file:px-3 file:py-1.5 file:text-xs file:font-medium"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    if (file) uploadBackground(file);
+                    event.target.value = "";
+                  }}
                 />
                 <p className="text-xs text-muted-foreground">
                   Shown behind the form and on the start card — it blends automatically with your theme.
@@ -275,9 +301,9 @@ function Builder() {
                     patchForm.mutate({ background_dim: Number(e.currentTarget.value) / 100 })
                   }
                 />
-                {form.background_image_url ? (
+                {normalizeImageUrl(form.background_image_url) ? (
                   <img
-                    src={form.background_image_url}
+                    src={normalizeImageUrl(form.background_image_url)}
                     alt="Form background preview"
                     className="h-16 w-full rounded-md object-cover"
                   />

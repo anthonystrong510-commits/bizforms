@@ -17,6 +17,7 @@ import { Route as AdminAttendeesRouteImport } from './routes/admin.attendees'
 import { Route as AdminSiteRouteImport } from './routes/admin.site'
 import { Route as FCodeRouteImport } from './routes/f.$code'
 import { Route as FormSlugRouteImport } from './routes/form.$slug'
+import { Route as ApiPublicSiteAssetRouteImport } from './routes/api/public/site-asset'
 import { Route as FormsIdIndexRouteImport } from './routes/forms.$id.index'
 import { Route as ApiPublicHooksKeepAliveRouteImport } from './routes/api/public/hooks/keep-alive'
 import { Route as FormsIdResponsesIndexRouteImport } from './routes/forms.$id.responses.index'
@@ -62,6 +63,11 @@ const FormSlugRoute = FormSlugRouteImport.update({
   path: '/form/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicSiteAssetRoute = ApiPublicSiteAssetRouteImport.update({
+  id: '/api/public/site-asset',
+  path: '/api/public/site-asset',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FormsIdIndexRoute = FormsIdIndexRouteImport.update({
   id: '/forms/$id/',
   path: '/forms/$id/',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/site-asset': typeof ApiPublicSiteAssetRoute
   '/forms/$id/': typeof FormsIdIndexRoute
   '/api/public/hooks/keep-alive': typeof ApiPublicHooksKeepAliveRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
   '/admin': typeof AdminIndexRoute
+  '/api/public/site-asset': typeof ApiPublicSiteAssetRoute
   '/forms/$id': typeof FormsIdIndexRoute
   '/api/public/hooks/keep-alive': typeof ApiPublicHooksKeepAliveRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/f/$code': typeof FCodeRoute
   '/form/$slug': typeof FormSlugRoute
   '/admin/': typeof AdminIndexRoute
+  '/api/public/site-asset': typeof ApiPublicSiteAssetRoute
   '/forms/$id/': typeof FormsIdIndexRoute
   '/api/public/hooks/keep-alive': typeof ApiPublicHooksKeepAliveRoute
   '/forms/$id/responses/$seq': typeof FormsIdResponsesSeqRoute
@@ -137,6 +146,7 @@ export interface FileRouteTypes {
     | '/f/$code'
     | '/form/$slug'
     | '/admin/'
+    | '/api/public/site-asset'
     | '/forms/$id/'
     | '/api/public/hooks/keep-alive'
     | '/forms/$id/responses/$seq'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/f/$code'
     | '/form/$slug'
     | '/admin'
+    | '/api/public/site-asset'
     | '/forms/$id'
     | '/api/public/hooks/keep-alive'
     | '/forms/$id/responses/$seq'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/f/$code'
     | '/form/$slug'
     | '/admin/'
+    | '/api/public/site-asset'
     | '/forms/$id/'
     | '/api/public/hooks/keep-alive'
     | '/forms/$id/responses/$seq'
@@ -180,6 +192,7 @@ export interface RootRouteChildren {
   FCodeRoute: typeof FCodeRoute
   FormSlugRoute: typeof FormSlugRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  ApiPublicSiteAssetRoute: typeof ApiPublicSiteAssetRoute
   FormsIdIndexRoute: typeof FormsIdIndexRoute
   ApiPublicHooksKeepAliveRoute: typeof ApiPublicHooksKeepAliveRoute
   FormsIdResponsesSeqRoute: typeof FormsIdResponsesSeqRoute
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FormSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/site-asset': {
+      id: '/api/public/site-asset'
+      path: '/api/public/site-asset'
+      fullPath: '/api/public/site-asset'
+      preLoaderRoute: typeof ApiPublicSiteAssetRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/forms/$id/': {
       id: '/forms/$id/'
       path: '/forms/$id'
@@ -284,6 +304,7 @@ const rootRouteChildren: RootRouteChildren = {
   FCodeRoute: FCodeRoute,
   FormSlugRoute: FormSlugRoute,
   AdminIndexRoute: AdminIndexRoute,
+  ApiPublicSiteAssetRoute: ApiPublicSiteAssetRoute,
   FormsIdIndexRoute: FormsIdIndexRoute,
   ApiPublicHooksKeepAliveRoute: ApiPublicHooksKeepAliveRoute,
   FormsIdResponsesSeqRoute: FormsIdResponsesSeqRoute,
